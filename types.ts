@@ -6,7 +6,8 @@ export enum Category {
   AGRICULTURE = "الزراعة الذكية",
   TRENDS = "الترندات العالمية",
   FUNNY = "مقاطع مضحكة",
-  IDEAS = "أفكار ممتعة"
+  IDEAS = "أفكار ممتعة",
+  TOURISM = "أخبار السياحة"
 }
 
 export interface SnapArticle {
@@ -14,8 +15,8 @@ export interface SnapArticle {
   category: Category;
   title: string;
   description: string;
-  hookImageUrl: string;
-  detailsImageUrl: string;
+  newsDate: string;
+  imageUrl: string;
   timestamp: number;
   sources?: { uri: string; title: string }[];
 }
@@ -26,8 +27,10 @@ export interface GenerationState {
   currentProgress: string;
 }
 
-export interface TelegramConfig {
-  botToken: string;
-  chatId: string;
-  enabled: boolean;
+export interface PublishConfig {
+  tgBotToken: string;
+  tgChatId: string;
+  tgEnabled: boolean;
+  snapEnabled: boolean;
+  snapWebhookUrl: string;
 }
