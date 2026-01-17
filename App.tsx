@@ -67,7 +67,12 @@ const App: React.FC = () => {
 
         ctx.save();
         ctx.beginPath();
-        ctx.roundRect(frameX, frameY, frameW, frameH, radius);
+        if (ctx.roundRect) {
+            ctx.roundRect(frameX, frameY, frameW, frameH, radius);
+        } else {
+            // Fallback for older browsers
+            ctx.rect(frameX, frameY, frameW, frameH);
+        }
         ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
         ctx.shadowColor = 'rgba(0,0,0,0.6)';
         ctx.shadowBlur = 50;
@@ -163,7 +168,6 @@ const App: React.FC = () => {
         });
       } catch (e) { console.error("Webhook Error", e); }
     }
-    // محاكاة الإرسال
     console.log("Auto-publishing to Snapchat logic handled.");
     return true;
   };
@@ -189,7 +193,7 @@ const App: React.FC = () => {
 
   const handleGenerate = async (category: Category) => {
     if (genState.loading) return;
-    setGenState({ loading: true, error: null, currentProgress: `جاري تحليل أحدث أخبار ${category} والتحقق من المصادر...` });
+    setGenState({ loading: true, error: null, currentProgress: `جاري تحضير جرعة من الضحك والمعلومات عن ${category}...` });
     try {
       const newSnap = await fetchNewsAndGenerateSnap(category);
       newSnap.imageUrl = await bakeFullArticleToImage(newSnap);
@@ -225,7 +229,7 @@ const App: React.FC = () => {
             </div>
             <div>
               <h1 className="text-xl font-black tracking-tight leading-none">سناب تيك <span className="text-[10px] bg-yellow-400 text-black px-1.5 py-0.5 rounded-md mr-1">V2</span></h1>
-              <span className="text-[10px] text-yellow-400 font-bold uppercase tracking-widest">K3333BI • آلي بالكامل</span>
+              <span className="text-[10px] text-yellow-400 font-bold uppercase tracking-widest">K3333BI • كوميدي ساخر</span>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -279,8 +283,8 @@ const App: React.FC = () => {
 
       <main className="max-w-6xl mx-auto p-4 md:p-8">
         <section className="mb-16 text-center md:text-right pt-8">
-          <h2 className="text-5xl md:text-8xl font-black mb-6 leading-tight tracking-tight">نشر <span className="text-yellow-400">ذكي</span> للمحتوى</h2>
-          <p className="text-slate-400 text-xl leading-relaxed max-w-3xl md:mr-0 mr-auto">أخبار محققة وتصاميم سينمائية في صفحة واحدة منسقة بإطارات جمالية، جاهزة لخطف الأنظار في سناب شات.</p>
+          <h2 className="text-5xl md:text-8xl font-black mb-6 leading-tight tracking-tight">نشر <span className="text-yellow-400">ساخر</span> وذكي</h2>
+          <p className="text-slate-400 text-xl leading-relaxed max-w-3xl md:mr-0 mr-auto">أخبار حقيقية بلمسة كوميدية متميزة، وتصاميم سينمائية جاهزة لخطف الأنظار في سناب شات.</p>
         </section>
 
         <section className="mb-16 flex flex-wrap gap-4 justify-center md:justify-start">
@@ -295,10 +299,10 @@ const App: React.FC = () => {
         {genState.loading && (
           <div className="mb-16 text-center py-24 bg-white/[0.02] rounded-[70px] border border-white/5 shadow-inner backdrop-blur-sm">
             <div className="w-28 h-28 bg-yellow-400 rounded-[35px] flex items-center justify-center mx-auto mb-8 text-black shadow-2xl shadow-yellow-400/40 animate-pulse">
-              <i className="fa-solid fa-wand-magic-sparkles text-5xl"></i>
+              <i className="fa-solid fa-face-grin-tears text-5xl"></i>
             </div>
             <h3 className="text-yellow-400 font-black text-3xl mb-3 tracking-wide animate-pulse">{genState.currentProgress}</h3>
-            <p className="text-slate-500 text-sm">نحن نستخدم الذكاء الاصطناعي للتحقق من 3 مصادر عالمية لضمان الدقة...</p>
+            <p className="text-slate-500 text-sm">نحن نبحث عن الفكاهة في قلب الحقيقة...</p>
           </div>
         )}
 
@@ -311,7 +315,7 @@ const App: React.FC = () => {
         {articles.length === 0 && !genState.loading && (
           <div className="text-center py-32 border-2 border-dashed border-white/5 rounded-[60px] opacity-30">
             <i className="fa-solid fa-newspaper text-8xl mb-6"></i>
-            <p className="text-2xl font-bold">لا يوجد محتوى حالياً. ابدأ بالتوليد الآن!</p>
+            <p className="text-2xl font-bold">لا يوجد محتوى حالياً. ابدأ بالضحك والتوليد الآن!</p>
           </div>
         )}
       </main>
@@ -358,8 +362,8 @@ const StoryCard: React.FC<{
   return (
     <div className="bg-slate-900/40 rounded-[60px] overflow-hidden border border-white/5 group hover:border-white/20 transition-all flex flex-col shadow-2xl relative group">
       <div className="absolute top-8 left-8 z-30 flex flex-col gap-3">
-        <span className="bg-green-500 text-white text-[11px] font-black px-4 py-1.5 rounded-full flex items-center gap-2 shadow-xl border border-white/10">
-          <i className="fa-solid fa-shield-check"></i> خبر موثق
+        <span className="bg-yellow-400 text-black text-[11px] font-black px-4 py-1.5 rounded-full flex items-center gap-2 shadow-xl border border-white/10">
+          <i className="fa-solid fa-face-grin-tears"></i> منشور ساخر
         </span>
         <span className="bg-black/60 backdrop-blur-xl text-white text-[10px] font-bold px-4 py-1.5 rounded-full border border-white/10 text-center">
           {article.category}
