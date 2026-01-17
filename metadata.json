@@ -1,0 +1,7 @@
+{
+  "name": "SnapTech Publisher",
+  "description": "An automated content generator for Snapchat focused on AI, technology, automotive, agriculture, and trending news with 9:16 visual creation.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
