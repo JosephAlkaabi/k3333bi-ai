@@ -5,6 +5,7 @@ export enum Category {
   GADGETS = "الأجهزة الحديثة",
   AGRICULTURE = "الزراعة الذكية",
   TRENDS = "الترندات العالمية",
+  HEALTH = "أخبار الصحة",
   FUNNY = "مقاطع مضحكة",
   IDEAS = "أفكار ممتعة",
   TOURISM = "أخبار السياحة"
