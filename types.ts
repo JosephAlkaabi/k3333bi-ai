@@ -7,6 +7,7 @@ export enum Category {
   TRENDS = "الترندات العالمية",
   HEALTH = "أخبار الصحة",
   BEAUTY = "أخبار الجمال",
+  WISDOM = "حكمة اليوم",
   FUNNY = "مقاطع مضحكة",
   IDEAS = "أفكار ممتعة",
   TOURISM = "أخبار السياحة"
@@ -17,6 +18,7 @@ export interface SnapArticle {
   category: Category;
   title: string;
   description: string;
+  author?: string;
   newsDate: string;
   imageUrl: string;
   timestamp: number;

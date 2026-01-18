@@ -13,14 +13,12 @@ const App: React.FC = () => {
   const [isAutoPilot, setIsAutoPilot] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   
-  // الحالة الفعلية للإعدادات المستخدمة في النشر
   const [config, setConfig] = useState<PublishConfig>({
     tgBotToken: localStorage.getItem('tg_bot_token') || '',
     tgChatId: localStorage.getItem('tg_chat_id') || '',
     tgEnabled: localStorage.getItem('tg_enabled') === 'true'
   });
 
-  // حالة مؤقتة للنموذج (Form) لمنع التغييرات غير المكتملة من الحفظ التلقائي
   const [formConfig, setFormConfig] = useState({
     tgBotToken: localStorage.getItem('tg_bot_token') || '',
     tgChatId: localStorage.getItem('tg_chat_id') || '',
@@ -30,7 +28,6 @@ const App: React.FC = () => {
   const categories = Object.values(Category);
   const autoPilotTimer = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // تحديث الإعدادات النشطة والحفظ في التخزين المحلي
   const handleSaveConfig = () => {
     localStorage.setItem('tg_bot_token', formConfig.tgBotToken);
     localStorage.setItem('tg_chat_id', formConfig.tgChatId);
@@ -119,15 +116,34 @@ const App: React.FC = () => {
         ctx.fillText(`⚡ ${article.category} ⚡`, 540, frameY + 80);
 
         ctx.fillStyle = '#FFFFFF';
-        ctx.font = '500 46px Tajawal, sans-serif';
-        const descLines = wrapText(article.description, 900);
-        let descY = frameY + 185;
-        descLines.forEach((line, i) => {
-          if (i < 5) {
-            ctx.fillText(line, 540, descY);
-            descY += 78;
+        
+        if (article.category === Category.WISDOM) {
+          ctx.font = '500 48px Tajawal, sans-serif';
+          const quoteLines = wrapText(article.description, 900);
+          let currentY = frameY + 185;
+          quoteLines.forEach((line, i) => {
+            if (i < 3) {
+              ctx.fillText(line, 540, currentY);
+              currentY += 85;
+            }
+          });
+          
+          if (article.author) {
+            ctx.font = '400 32px Tajawal, sans-serif';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.fillText(`— ${article.author}`, 540, currentY + 35);
           }
-        });
+        } else {
+          ctx.font = '500 46px Tajawal, sans-serif';
+          const descLines = wrapText(article.description, 900);
+          let descY = frameY + 185;
+          descLines.forEach((line, i) => {
+            if (i < 5) {
+              ctx.fillText(line, 540, descY);
+              descY += 78;
+            }
+          });
+        }
 
         ctx.fillStyle = 'rgba(255,255,255,0.6)';
         ctx.font = 'bold 30px Tajawal, sans-serif';
@@ -178,7 +194,7 @@ const App: React.FC = () => {
 
     try {
       const url = `https://api.telegram.org/bot${token}/sendPhoto`;
-      const caption = `<b>${article.title}</b>\n\n📅 ${article.newsDate}\n\n${article.description}\n\n👻 Snapchat: K3333BI\n\n🔗 المصادر:\n${article.sources?.map(s => `<a href="${s.uri}">${s.title}</a>`).join('\n') || 'تحقق ذكي'}`;
+      const caption = `<b>${article.title}</b>\n\n📅 ${article.newsDate}\n\n${article.description}${article.author ? `\n— ${article.author}` : ""}\n\n👻 Snapchat: K3333BI\n\n🔗 المصادر:\n${article.sources?.map(s => `<a href="${s.uri}">${s.title}</a>`).join('\n') || 'تحقق ذكي'}`;
       const formData = new FormData();
       formData.append('chat_id', chatId);
       formData.append('photo', base64ToBlob(article.imageUrl), 'story.png');
@@ -191,7 +207,7 @@ const App: React.FC = () => {
 
   const handleGenerate = async (category: Category) => {
     if (genState.loading) return;
-    setGenState({ loading: true, error: null, currentProgress: `جاري صيد خبر ذكي عن ${category}...` });
+    setGenState({ loading: true, error: null, currentProgress: `جاري تحضير ${category}...` });
     try {
       const newSnap = await fetchNewsAndGenerateSnap(category);
       newSnap.imageUrl = await bakeFullArticleToImage(newSnap);
@@ -207,7 +223,7 @@ const App: React.FC = () => {
 
   const handleEditArticle = async (article: SnapArticle, command: string) => {
     const updatedData = await editNewsArticle(article, command);
-    const updatedArticle = { ...article, title: updatedData.title, description: updatedData.content };
+    const updatedArticle = { ...article, title: updatedData.title, description: updatedData.content, author: updatedData.author };
     updatedArticle.imageUrl = await bakeFullArticleToImage(updatedArticle);
     setArticles(prev => prev.map(a => a.id === article.id ? updatedArticle : a));
   };
@@ -299,8 +315,8 @@ const App: React.FC = () => {
 
       <main className="max-w-6xl mx-auto p-4 md:p-8">
         <section className="mb-16 text-center md:text-right pt-8">
-          <h2 className="text-5xl md:text-8xl font-black mb-6 leading-tight tracking-tight">أخبار <span className="text-rose-500">ذكية</span></h2>
-          <p className="text-slate-400 text-xl leading-relaxed max-w-3xl md:mr-0 mr-auto">صناعة محتوى ساخر ومكتمل، مع نشر آلي ثابت ومستقر لقناتك على التليقرام.</p>
+          <h2 className="text-5xl md:text-8xl font-black mb-6 leading-tight tracking-tight">محتوى <span className="text-rose-500">متميز</span></h2>
+          <p className="text-slate-400 text-xl leading-relaxed max-w-3xl md:mr-0 mr-auto">صناعة محتوى ساخر ومكتمل، من الأخبار العاجلة إلى حكم الفلاسفة العميقة.</p>
         </section>
 
         <section className="mb-16 flex flex-wrap gap-4 justify-center md:justify-start">
@@ -351,6 +367,7 @@ const CategoryIcon: React.FC<{ category: Category }> = ({ category }) => {
     [Category.TRENDS]: "fa-bolt text-yellow-400",
     [Category.HEALTH]: "fa-heart-pulse text-rose-400",
     [Category.BEAUTY]: "fa-sparkles text-pink-400",
+    [Category.WISDOM]: "fa-quote-right text-orange-400",
     [Category.FUNNY]: "fa-face-laugh-squint text-orange-400",
     [Category.IDEAS]: "fa-lightbulb text-yellow-500",
     [Category.TOURISM]: "fa-plane-departure text-sky-400",
@@ -388,7 +405,7 @@ const StoryCard: React.FC<{
     <div className="bg-slate-900/40 rounded-[60px] overflow-hidden border border-white/5 group hover:border-white/20 transition-all flex flex-col shadow-2xl relative">
       <div className="absolute top-8 left-8 z-30 flex flex-col gap-3">
         <span className="bg-yellow-400 text-black text-[11px] font-black px-4 py-1.5 rounded-full flex items-center gap-2 shadow-xl border border-white/10">
-          <i className="fa-solid fa-check-circle"></i> خبر محقق
+          <i className="fa-solid fa-check-circle"></i> {article.category === Category.WISDOM ? 'حكمة محققة' : 'خبر محقق'}
         </span>
       </div>
       
@@ -402,7 +419,7 @@ const StoryCard: React.FC<{
               value={command} 
               onChange={(e) => setCommand(e.target.value)}
               className="w-full h-40 bg-white/5 border border-white/10 rounded-3xl p-5 text-sm outline-none focus:border-rose-500 transition-colors resize-none text-white"
-              placeholder="مثال: اجعل الخبر كوميدياً أكثر، أو حوله إلى صيغة سؤال محير..."
+              placeholder="مثال: اجعل المحتوى أكثر سخرية، أو غير الخلفية..."
             />
             <div className="flex gap-4">
               <button 
@@ -445,7 +462,7 @@ const StoryCard: React.FC<{
           onClick={() => {
             const link = document.createElement('a');
             link.href = article.imageUrl;
-            link.download = `STORY-${article.id}.png`;
+            link.download = `${article.category}-${article.id}.png`;
             link.click();
           }}
           className="w-full bg-white/5 text-slate-400 py-3 rounded-2xl text-[11px] font-bold hover:bg-white/10 border border-white/5 transition-all text-center"
