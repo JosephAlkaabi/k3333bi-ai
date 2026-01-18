@@ -10,17 +10,17 @@ export const fetchNewsAndGenerateSnap = async (category: Category): Promise<Snap
     contents: `ابحث عن أحدث خبر عالمي أو محلي موثوق جداً (خلال الـ 24 ساعة الماضية) لفئة: ${category}.
     
     متطلبات التحقق والصياغة الكوميدية المتميزة:
-    1. التحقق: تأكد من صحة الخبر من 3 مصادر موثوقة على الأقل (نحن نسخر من الخبر ولكن لا نكذب فيه).
-    2. الأسلوب: تقمص شخصية "صانع محتوى ساخر" خفيف الظل، يستخدم الكوميديا السوداء أو السخرية اللطيفة من التكنولوجيا والواقع.
-    3. العنوان: صغ عنواناً "هوك" كوميدي، ساخر، ومثير جداً بأسلوب منصات التواصل الاجتماعي (مثلاً: "وأخيراً الروبوتات قررت..").
-    4. التفاصيل: اكتب الخبر بأسلوب فكاهي (جملتين بحد أقصى) يجمع بين المعلومة الحقيقية والتعليق الساخر المضحك الذي يجعل القارئ يبتسم.
+    1. التحقق: تأكد من صحة الخبر من 3 مصادر موثوقة.
+    2. الأسلوب: تقمص شخصية "صانع محتوى ساخر" خفيف الظل.
+    3. العنوان: صغ عنواناً "هوك" كوميدي ومثير. يجب أن يكون قصيراً وواضحاً.
+    4. التفاصيل: اكتب الخبر بأسلوب فكاهي (جملتين كاملتين بحد أقصى). **هام جداً: يجب أن تكون الجمل مكتملة المعنى وغير مقطوعة أو ناقصة.**
     5. التاريخ: استخرج توقيت النشر الدقيق.
 
     النتيجة بصيغة JSON:
     - title: العنوان الكوميدي المثير بالعربية.
-    - content: التفاصيل الساخرة والمحققة بالعربية.
+    - content: التفاصيل الساخرة المكتملة بالعربية (تأكد من اكتمال الجملة).
     - news_date: تاريخ وتوقيت النشر.
-    - image_prompt: وصف إنجليزي لصورة خلفية سينمائية 8K بجودة مذهلة وبدون أي نصوص تعبر عن موضوع الخبر بشكل فني ومبهر.`,
+    - image_prompt: وصف إنجليزي لصورة خلفية سينمائية 8K بجودة مذهلة، يفضل أن تكون الألوان في الجزء العلوي هادئة أو داكنة لتسمح ببروز النص الأصفر.`,
     config: {
       tools: [{ googleSearch: {} }],
       responseMimeType: "application/json",
@@ -44,7 +44,7 @@ export const fetchNewsAndGenerateSnap = async (category: Category): Promise<Snap
   const resImage = await ai.models.generateContent({
     model: 'gemini-2.5-flash-image',
     contents: {
-      parts: [{ text: `High-impact 8k cinematic masterpiece, vertical 9:16 aspect ratio, dramatic realistic lighting, no text, no captions, photorealistic. Subject: ${rawData.image_prompt}` }]
+      parts: [{ text: `High-impact 8k cinematic masterpiece, vertical 9:16 aspect ratio, dramatic realistic lighting, no text, photorealistic. The top third should be relatively dark or simple. Subject: ${rawData.image_prompt}` }]
     },
     config: { imageConfig: { aspectRatio: "9:16" } }
   });

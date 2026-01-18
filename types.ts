@@ -31,6 +31,4 @@ export interface PublishConfig {
   tgBotToken: string;
   tgChatId: string;
   tgEnabled: boolean;
-  snapEnabled: boolean;
-  snapWebhookUrl: string;
 }
