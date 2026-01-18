@@ -5,7 +5,7 @@ import App from './App'
 const container = document.getElementById('root')
 
 if (!container) {
-  console.error('❌ Root element (#root) not found. Ensure index.html has <div id="root"></div>.')
+  console.error('❌ Root element (#root) not found')
 } else {
   ReactDOM.createRoot(container).render(
     <React.StrictMode>
