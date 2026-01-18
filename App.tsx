@@ -350,6 +350,7 @@ const CategoryIcon: React.FC<{ category: Category }> = ({ category }) => {
     [Category.AGRICULTURE]: "fa-seedling text-green-400",
     [Category.TRENDS]: "fa-bolt text-yellow-400",
     [Category.HEALTH]: "fa-heart-pulse text-rose-400",
+    [Category.BEAUTY]: "fa-sparkles text-pink-400",
     [Category.FUNNY]: "fa-face-laugh-squint text-orange-400",
     [Category.IDEAS]: "fa-lightbulb text-yellow-500",
     [Category.TOURISM]: "fa-plane-departure text-sky-400",

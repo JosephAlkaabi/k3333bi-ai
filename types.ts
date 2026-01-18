@@ -6,6 +6,7 @@ export enum Category {
   AGRICULTURE = "الزراعة الذكية",
   TRENDS = "الترندات العالمية",
   HEALTH = "أخبار الصحة",
+  BEAUTY = "أخبار الجمال",
   FUNNY = "مقاطع مضحكة",
   IDEAS = "أفكار ممتعة",
   TOURISM = "أخبار السياحة"
