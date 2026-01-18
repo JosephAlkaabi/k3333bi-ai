@@ -12,6 +12,7 @@ const App: React.FC = () => {
   });
   const [isAutoPilot, setIsAutoPilot] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [isBulkGenerating, setIsBulkGenerating] = useState(false);
   
   const [config, setConfig] = useState<PublishConfig>({
     tgBotToken: localStorage.getItem('tg_bot_token') || '',
@@ -206,7 +207,6 @@ const App: React.FC = () => {
   };
 
   const handleGenerate = async (category: Category) => {
-    if (genState.loading) return;
     setGenState({ loading: true, error: null, currentProgress: `جاري تحضير ${category}...` });
     try {
       const newSnap = await fetchNewsAndGenerateSnap(category);
@@ -218,6 +218,26 @@ const App: React.FC = () => {
     } catch (err: any) {
       setGenState({ loading: false, error: "فشل التوليد. تحقق من الاتصال.", currentProgress: "" });
       setIsAutoPilot(false); 
+      throw err;
+    }
+  };
+
+  const handleGenerateAll = async () => {
+    if (genState.loading || isBulkGenerating) return;
+    setIsBulkGenerating(true);
+    
+    try {
+      for (const cat of categories) {
+        setGenState(prev => ({ ...prev, currentProgress: `تحضير باقة التصنيفات: جاري الآن ${cat}...` }));
+        await handleGenerate(cat);
+        // Delay slighty between calls to be safe
+        await new Promise(r => setTimeout(r, 1000));
+      }
+    } catch (err) {
+      console.error("Bulk generation error", err);
+    } finally {
+      setIsBulkGenerating(false);
+      setGenState({ loading: false, error: null, currentProgress: "" });
     }
   };
 
@@ -259,6 +279,14 @@ const App: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <button 
+              onClick={handleGenerateAll}
+              disabled={genState.loading || isBulkGenerating}
+              className={`px-5 py-2.5 rounded-full font-black text-xs transition-all flex items-center gap-2 border shadow-lg bg-rose-500 text-white border-rose-400 shadow-rose-500/20 active:scale-95 disabled:opacity-50`}
+            >
+              <i className={`fa-solid ${isBulkGenerating ? 'fa-spinner animate-spin' : 'fa-wand-magic-sparkles'}`}></i>
+              {isBulkGenerating ? 'جاري نشر الكل...' : 'توليد ونشر الكل'}
+            </button>
             <button onClick={() => setShowSettings(true)} className="relative w-11 h-11 bg-white/5 hover:bg-white/10 rounded-full flex items-center justify-center border border-white/10 transition-all active:scale-90">
               <i className="fa-solid fa-gear text-slate-300"></i>
               {isTelegramConfigured && <span className="absolute -top-1 -right-1 w-4 h-4 bg-sky-500 rounded-full border-2 border-[#020617] flex items-center justify-center text-[8px] font-bold">L</span>}
@@ -316,7 +344,7 @@ const App: React.FC = () => {
       <main className="max-w-6xl mx-auto p-4 md:p-8">
         <section className="mb-16 text-center md:text-right pt-8">
           <h2 className="text-5xl md:text-8xl font-black mb-6 leading-tight tracking-tight">محتوى <span className="text-rose-500">متميز</span></h2>
-          <p className="text-slate-400 text-xl leading-relaxed max-w-3xl md:mr-0 mr-auto">صناعة محتوى ساخر ومكتمل، من الأخبار العاجلة إلى حكم الفلاسفة العميقة.</p>
+          <p className="text-slate-400 text-xl leading-relaxed max-w-3xl md:mr-0 mr-auto">صناعة محتوى ساخر ومكتمل، من الأخبار العاجلة إلى عالم الموظف وحكم الفلاسفة.</p>
         </section>
 
         <section className="mb-16 flex flex-wrap gap-4 justify-center md:justify-start">
@@ -333,7 +361,9 @@ const App: React.FC = () => {
             <div className="w-28 h-28 bg-rose-500 rounded-[35px] flex items-center justify-center mx-auto mb-8 text-white shadow-2xl shadow-rose-500/40 animate-pulse">
               <i className="fa-solid fa-wand-magic-sparkles text-5xl"></i>
             </div>
-            <h3 className="text-rose-500 font-black text-3xl mb-3 tracking-wide animate-pulse">جاري تحضير المحتوى...</h3>
+            <h3 className="text-rose-500 font-black text-3xl mb-3 tracking-wide animate-pulse">
+              {genState.currentProgress || 'جاري تحضير المحتوى...'}
+            </h3>
           </div>
         )}
 
@@ -371,6 +401,7 @@ const CategoryIcon: React.FC<{ category: Category }> = ({ category }) => {
     [Category.FUNNY]: "fa-face-laugh-squint text-orange-400",
     [Category.IDEAS]: "fa-lightbulb text-yellow-500",
     [Category.TOURISM]: "fa-plane-departure text-sky-400",
+    [Category.EMPLOYEE]: "fa-briefcase text-slate-300",
   };
   return <i className={`fa-solid ${icons[category] || 'fa-star'} text-xl`}></i>;
 };

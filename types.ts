@@ -10,7 +10,8 @@ export enum Category {
   WISDOM = "حكمة اليوم",
   FUNNY = "مقاطع مضحكة",
   IDEAS = "أفكار ممتعة",
-  TOURISM = "أخبار السياحة"
+  TOURISM = "أخبار السياحة",
+  EMPLOYEE = "عالم الموظف"
 }
 
 export interface SnapArticle {
